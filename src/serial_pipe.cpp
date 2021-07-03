@@ -230,6 +230,11 @@ char *Pipe::query(uint8_t opCode, char *buf)
 	return p;
 }
 
+void Pipe::sendOpcode(uint8_t opcode)
+{
+	_sendHeader(opcode);
+}
+
 bool Pipe::isConnected()
 {
 	_sendHeader(OPCODE_CONNECTED);

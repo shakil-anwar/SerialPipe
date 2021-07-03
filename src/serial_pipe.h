@@ -11,6 +11,7 @@ public:
 	Pipe(Stream *serialPtr);
 	void setBoundary(char initiator, char terminator);
 
+	void sendOpcode(uint8_t opcode);
 	int getOpcode();
 	void send(const char *data);
 	void send(uint8_t opCode, const char *data);
