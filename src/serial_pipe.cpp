@@ -209,7 +209,6 @@ void Pipe::send(uint8_t opCode, uint32_t data)
 char *Pipe::read(char *dataPtr)
 {
 	char *ptr = readUntil(dataPtr,_terminator);
-	_bufferClear();
 	return ptr;
 	// return dataPtr;
 }
@@ -267,17 +266,26 @@ void Pipe::noAck()
 int Pipe::waitForAck()
 {
 	int timeOut = _ackTimeout;
+	int code = 0;
 	char ackData[5];
 	while(--timeOut)
 	{
 		if(serial -> available())
 		{
 			char *ptr = read(ackData);
-			int code = atoi(ptr);
+			code = atoi(ptr);
 			// Serial.println(code);
-			return code;
+			if(code == 200)
+			{
+				break;
+			}
 		}
 		delay(1);
+	}
+	_bufferClear();
+	if(code>0)
+	{
+		return code;
 	}
 	Serial.println(F("Pipe Wait Timeout"));
 	return -1;
