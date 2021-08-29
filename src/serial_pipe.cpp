@@ -3,7 +3,7 @@
 #define QUERY_TIMEOUT 1000
 
 #define LIBRARY_MAX_OPCODE_NUM 9
-#define OPCODE_CONNECTED 1
+#define OPCODE_CONNECTED 5
 
 
 Pipe::Pipe(Stream *serialPtr)
@@ -196,6 +196,13 @@ void Pipe::send(uint8_t opCode, const char *data)
 	// // Serial.print("Test str: "); Serial.println(temp);
 	// serial -> write(temp);
 	_sendHeader(opCode);
+	serial -> write(data);
+	serial -> print('#');
+}
+void Pipe::send(uint8_t opCode, char *data, uint8_t mid)
+{
+	_sendHeader(opCode);
+	serial -> write((char)mid);
 	serial -> write(data);
 	serial -> print('#');
 }

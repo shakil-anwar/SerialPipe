@@ -15,6 +15,7 @@ public:
 	int getOpcode();
 	void send(const char *data);
 	void send(uint8_t opCode, const char *data);
+	void send(uint8_t opCode, char *data, uint8_t mid);
 	void send(uint8_t opCode, uint32_t data);
 	char *read(char *dataPtr);
 	char *query(uint8_t opCode, char *buf);
