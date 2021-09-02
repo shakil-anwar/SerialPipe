@@ -17,11 +17,12 @@ public:
 	void send(uint8_t opCode, const char *data);
 	void send(uint8_t opCode, char *data, uint8_t mid);
 	void send(uint8_t opCode, uint32_t data);
-	char *read(char *dataPtr);
-	char *query(uint8_t opCode, char *buf);
+	char *read(char *dataPtr, uint16_t len);
+	char *query(uint8_t opCode, char *buf, uint16_t len);
+	
 
 	bool sendWithAck(const char *data);
-	char *readWithAck(char *dataPtr);
+	char *readWithAck(char *dataPtr, uint16_t len);
 
 	int waitForAck();
 	void ack();
@@ -39,7 +40,7 @@ private:
 	char _terminator = '#';
 
 	int _available();
-	char *readUntil(char *buffer,char terminator);
+	char *readUntil(char *buffer,char terminator, uint16_t len);
 	bool _discardUntil(char terminator);
 	void _bufferClear();
 	int _timedRead();

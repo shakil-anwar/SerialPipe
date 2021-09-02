@@ -40,15 +40,17 @@ int Pipe::_timedRead()
 	return -1;
 }
 
-char * Pipe::readUntil(char *buffer,char terminator)
+char * Pipe::readUntil(char *buffer,char terminator, uint16_t len)
 {
 	char *ptr  = buffer;
+	uint8_t dCount = 0;
 
 	int c = _timedRead();
-	while(c >=0 && c != terminator)
+	while(c >=0 && c != terminator && dCount<len)
 	{
 		*ptr = (char)c;
 		ptr++;
+		dCount++;
 		c = _timedRead();
 	}
 
@@ -136,7 +138,7 @@ int Pipe::getOpcode()
 		if(firstChar)
 		{
 			char opStr[6];
-			char *ptr = readUntil(opStr,'=');
+			char *ptr = readUntil(opStr,'=',6);
 			// Serial.print(F("op: "));Serial.println(ptr);
 			int opcode = atoi(ptr);
 			if(opcode <= LIBRARY_MAX_OPCODE_NUM)
@@ -213,14 +215,14 @@ void Pipe::send(uint8_t opCode, uint32_t data)
 	serial -> print('#');
 }
 
-char *Pipe::read(char *dataPtr)
+char *Pipe::read(char *dataPtr, uint16_t len)
 {
-	char *ptr = readUntil(dataPtr,_terminator);
+	char *ptr = readUntil(dataPtr,_terminator, len);
 	return ptr;
 	// return dataPtr;
 }
 
-char *Pipe::query(uint8_t opCode, char *buf)
+char *Pipe::query(uint8_t opCode, char *buf, uint16_t len)
 {
 	// Serial.print(F("Pipe Query opCode : "));Serial.println(opCode);
 	_sendHeader(opCode);
@@ -232,7 +234,7 @@ char *Pipe::query(uint8_t opCode, char *buf)
 		delay(1);
 		// Serial.print(F("Code : "));Serial.println(retCode);
 	}while(!(retCode == opCode) && --timeOut);
-	char *p = read(buf);
+	char *p = read(buf, len);
 	return p;
 }
 
@@ -279,7 +281,7 @@ int Pipe::waitForAck()
 	{
 		if(serial -> available())
 		{
-			char *ptr = read(ackData);
+			char *ptr = read(ackData,5);
 			code = atoi(ptr);
 			// Serial.println(code);
 			if(code == 200)
@@ -306,12 +308,12 @@ bool Pipe::sendWithAck(const char *data)
 }
 
 
-char *Pipe::readWithAck(char *dataPtr)
+char *Pipe::readWithAck(char *dataPtr, uint16_t len)
 {
 	char *ptr = dataPtr;
-	readUntil(ptr,_terminator);
-	int len = strlen(dataPtr);
-	if(len >0 )
+	readUntil(ptr,_terminator,len);
+	int len2 = strlen(dataPtr);
+	if(len2 >0 )
 	{
 		// sendAck(OK);
 		ack();
